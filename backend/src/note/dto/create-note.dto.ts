@@ -5,9 +5,3 @@ export class CreateNoteDto {
   @MinLength(1)
   body: string;
 }
-
-export class CreateNoteDto2 {
-  @IsString()
-  @MinLength(2)
-  body: number;
-}
