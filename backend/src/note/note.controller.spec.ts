@@ -6,12 +6,11 @@ import { NoteService } from './note.service';
 
 describe('NoteController', () => {
   let controller: NoteController;
-  let noteService: NoteService;
 
-  const noteServiceMock = {
-    create: jest.fn(),
-    findAll: jest.fn(),
-  } as unknown as NoteService;
+  const noteServiceMock: jest.Mocked<Pick<NoteService, 'create' | 'findAll'>> = {
+    create: jest.fn<Promise<Note>, [CreateNoteDto]>(),
+    findAll: jest.fn<Promise<Note[]>, []>(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -20,7 +19,6 @@ describe('NoteController', () => {
     }).compile();
 
     controller = module.get<NoteController>(NoteController);
-    noteService = module.get<NoteService>(NoteService);
     jest.clearAllMocks();
   });
 
@@ -36,10 +34,10 @@ describe('NoteController', () => {
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    (noteService.create as unknown as jest.Mock).mockResolvedValue(createdNote);
+    noteServiceMock.create.mockResolvedValue(createdNote);
 
     await expect(controller.create(dto)).resolves.toEqual(createdNote);
-    expect(noteService.create).toHaveBeenCalledWith(dto);
+    expect(noteServiceMock.create).toHaveBeenCalledWith(dto);
   });
 
   it('should delegate fetching notes to the service', async () => {
@@ -51,9 +49,9 @@ describe('NoteController', () => {
         updatedAt: new Date(),
       },
     ];
-    (noteService.findAll as unknown as jest.Mock).mockResolvedValue(notes);
+    noteServiceMock.findAll.mockResolvedValue(notes);
 
     await expect(controller.findAll()).resolves.toEqual(notes);
-    expect(noteService.findAll).toHaveBeenCalled();
+    expect(noteServiceMock.findAll).toHaveBeenCalled();
   });
 });
