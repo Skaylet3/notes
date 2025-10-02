@@ -7,10 +7,11 @@ import { NoteService } from './note.service';
 describe('NoteController', () => {
   let controller: NoteController;
 
-  const noteServiceMock: jest.Mocked<Pick<NoteService, 'create' | 'findAll'>> = {
-    create: jest.fn<Promise<Note>, [CreateNoteDto]>(),
-    findAll: jest.fn<Promise<Note[]>, []>(),
-  };
+  const noteServiceMock: jest.Mocked<Pick<NoteService, 'create' | 'findAll'>> =
+    {
+      create: jest.fn<Promise<Note>, [CreateNoteDto]>(),
+      findAll: jest.fn<Promise<Note[]>, []>(),
+    };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
