@@ -25,6 +25,17 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Authentication
+
+This project now includes JWT-based authentication with HttpOnly session cookies.
+
+- `POST /auth/sign-up` – register a user and receive a session cookie.
+- `POST /auth/sign-in` – authenticate an existing user.
+- `POST /auth/log-out` – clear the active session cookie.
+- `GET /note`, `POST /note` – protected endpoints that require the session cookie.
+
+Set `JWT_SECRET` (and optionally `JWT_EXPIRATION` in seconds) in your environment to control JWT signing. The default values are suitable for local development only.
+
 ## Project setup
 
 ```bash

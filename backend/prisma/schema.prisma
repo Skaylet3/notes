@@ -15,7 +15,18 @@ generator client {
 
 model Note {
   id        Int      @id @default(autoincrement())
-  body String 
+  body      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  authorId  Int?
+  author    User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
+}
+
+model User {
+  id             Int      @id @default(autoincrement())
+  email          String   @unique
+  hashedPassword String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  notes          Note[]
 }

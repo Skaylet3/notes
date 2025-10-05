@@ -5,10 +5,12 @@ import { NoteService } from './note.service';
 
 describe('NoteService', () => {
   let service: NoteService;
+  const noteCreateMock = jest.fn();
+  const noteFindManyMock = jest.fn();
   const prismaServiceMock = {
     note: {
-      create: jest.fn(),
-      findMany: jest.fn(),
+      create: noteCreateMock,
+      findMany: noteFindManyMock,
     },
   } as unknown as PrismaService;
 
@@ -21,7 +23,8 @@ describe('NoteService', () => {
     }).compile();
 
     service = module.get<NoteService>(NoteService);
-    jest.clearAllMocks();
+    noteCreateMock.mockReset();
+    noteFindManyMock.mockReset();
   });
 
   it('should be defined', () => {
@@ -35,14 +38,13 @@ describe('NoteService', () => {
       body: dto.body,
       createdAt: new Date(),
       updatedAt: new Date(),
+      authorId: 1,
     };
-    (prismaServiceMock.note.create as unknown as jest.Mock).mockResolvedValue(
-      created,
-    );
+    noteCreateMock.mockResolvedValue(created);
 
-    await expect(service.create(dto)).resolves.toEqual(created);
-    expect(prismaServiceMock.note.create).toHaveBeenCalledWith({
-      data: { body: dto.body },
+    await expect(service.create(1, dto)).resolves.toEqual(created);
+    expect(noteCreateMock).toHaveBeenCalledWith({
+      data: { body: dto.body, author: { connect: { id: 1 } } },
     });
   });
 
@@ -53,14 +55,14 @@ describe('NoteService', () => {
         body: 'note',
         createdAt: new Date(),
         updatedAt: new Date(),
+        authorId: 1,
       },
     ];
-    (prismaServiceMock.note.findMany as unknown as jest.Mock).mockResolvedValue(
-      notes,
-    );
+    noteFindManyMock.mockResolvedValue(notes);
 
-    await expect(service.findAll()).resolves.toEqual(notes);
-    expect(prismaServiceMock.note.findMany).toHaveBeenCalledWith({
+    await expect(service.findAllForUser(1)).resolves.toEqual(notes);
+    expect(noteFindManyMock).toHaveBeenCalledWith({
+      where: { authorId: 1 },
       orderBy: { createdAt: 'desc' },
     });
   });

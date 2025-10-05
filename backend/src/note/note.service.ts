@@ -7,16 +7,18 @@ import { CreateNoteDto } from './dto/create-note.dto';
 export class NoteService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createNoteDto: CreateNoteDto): Promise<Note> {
+  async create(userId: number, createNoteDto: CreateNoteDto): Promise<Note> {
     return this.prisma.note.create({
       data: {
         body: createNoteDto.body,
+        author: { connect: { id: userId } },
       },
     });
   }
 
-  async findAll(): Promise<Note[]> {
+  async findAllForUser(userId: number): Promise<Note[]> {
     return this.prisma.note.findMany({
+      where: { authorId: userId },
       orderBy: { createdAt: 'desc' },
     });
   }
